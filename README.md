@@ -6,10 +6,10 @@ Build docker-compose
 docker-compose up -d
 ```
 
-Config policy
+Nếu policy không được set tự động thì thực hiện run file sh.
 
 ```
-sh setup/setup.sh
+sh setup/setupv2.sh
 ```
 
 Nếu không thực hiện được file sh thì thực hiện put trên dev-tools của kibana.
