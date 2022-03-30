@@ -1,0 +1,19 @@
+#!/bin/bash -ex
+
+ES_URL=http://elasticsearch-hot:9200
+
+echo "Waiting for Kibana to be ready on port 5601..."
+echo "Sleeping for an initial 30 seconds..."
+
+
+# Load the relevant settings for ILM
+curl -s -H 'Content-Type: application/json' -XPUT ${ES_URL}/_cluster/settings -d@/opt/setup/cluster.json
+curl -s -H 'Content-Type: application/json' -XPUT ${ES_URL}/_ilm/policy/logs-hot-warm -d@/opt/setup/ilm.json
+curl -s -H 'Content-Type: application/json' -XPUT ${ES_URL}/_template/template_logs -d@/opt/setup/template_logS.json
+curl -s -H 'Content-Type: application/json' -XPUT ${ES_URL}/testlog-000001 -d@/opt/setup/index.json
+
+# Load the relevant settings for SLM
+curl -s -H 'Content-Type: application/json' -XPUT ${ES_URL}/_snapshot/logs-snapshots-repository -d@/opt/setup/snapshot_repository.json
+curl -s -H 'Content-Type: application/json' -XPUT ${ES_URL}/_slm/policy/logs-snapshot-policy -d@/opt/setup/slm.json
+
+echo "Done"

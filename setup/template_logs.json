@@ -1,0 +1,26 @@
+{
+  "index_patterns": ["testlog-*"],
+  "settings": {
+    "number_of_shards" : 2,
+    "number_of_replicas" : 0,
+    "routing.allocation.include.size": "hot",
+    "lifecycle.name": "logs-hot-warm",
+    "lifecycle.rollover_alias": "alias-logs"   
+  },
+  "mappings": {
+    "properties" : {
+      "name": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "age":{
+          "type":"long"
+      }
+    }
+  }
+}
