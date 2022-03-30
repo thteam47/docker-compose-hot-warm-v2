@@ -40,7 +40,7 @@ PUT _cluster/settings
 }
 ```
 
-1. Thực hiện tạo policy
+2. Thực hiện tạo policy
 
 ```
 PUT /_ilm/policy/logs-hot-warm
@@ -94,7 +94,7 @@ PUT /_ilm/policy/logs-hot-warm
 * Tạo policy logs-hot-warm. 
 
 	* Hot: Index đang được cập nhật và truy vấn.
-	* Warm: Index không được cập nhật nhưng vân được truy vấn.
+	* Warm: Index không được cập nhật nhưng vẫn được truy vấn.
 	* Cold: Index không được cập nhật, các truy vấn không thường xuyên. Tốc độ truy vấn chậm hơn. 
 	* Frozen: Index không được cập nhật, hiếm khi được truy vấn. Tốc độ truy vấn cực kỳ châm. 
 	* Delete: Index không cần thiết và được xóa.
@@ -116,7 +116,7 @@ PUT /_ilm/policy/logs-hot-warm
 		* min_age: thời gian tối thiểu đê bắt đầu chuyển index.
 	* Priority: độ ưu tiên, độ ưu tiên càng lớn thì được thực hiện trước.
 
-1. Tạo template cho index
+3. Tạo template cho index
 
 ```
 PUT _template/template_logs
@@ -147,7 +147,7 @@ PUT _template/template_logs
 }
 ```
 
-1.  Khởi tạo index
+4.  Khởi tạo index
 
 ```
 PUT testlog -000001
@@ -184,7 +184,7 @@ PUT _snapshot/logs-snapshots-repository
 	```
 	* Trong đó `/usr/share/elasticsearch/snapshots/` là đuờng dẫn snapshot repository.
 
-1. Lập lịch tạo snapshot
+2. Lập lịch tạo snapshot
 
 ```
 PUT _slm/policy/logs-snapshot-policy
