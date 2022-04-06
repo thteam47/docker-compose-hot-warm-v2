@@ -1,11 +1,11 @@
 {
   "index_patterns": ["testlog-*"],
   "settings": {
-    "number_of_shards" : 2,
-    "number_of_replicas" : 0,
-    "routing.allocation.include.size": "hot",
+    "index.number_of_shards" : 2,
+    "index.number_of_replicas" : 1,
     "lifecycle.name": "logs-hot-warm",
-    "lifecycle.rollover_alias": "alias-logs"   
+    "lifecycle.rollover_alias": "test-logs",  
+    "index.routing.allocation.include.box_type":"hot" 
   },
   "mappings": {
     "properties" : {

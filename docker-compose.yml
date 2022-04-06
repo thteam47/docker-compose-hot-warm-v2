@@ -1,28 +1,18 @@
 version: '3.7'
 services:
   elasticsearch-hot:
-    image: docker.elastic.co/elasticsearch/elasticsearch:$ELASTIC_VERSION
-    build:
-      dockerfile: ./Dockerfile
-      context: .
-      args:
-        - ELASTIC_VERSION=${ELASTIC_VERSION}
-    container_name: elasticsearch-hot
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+    build: .
     environment:
       - node.name=elasticsearch-hot
       - cluster.name=es-docker-cluster
+      #- node.attr.size=hot
+      - node.attr.box_type=hot
       - discovery.seed_hosts=elasticsearch-warm,elasticsearch-cold
       - cluster.initial_master_nodes=elasticsearch-hot,elasticsearch-warm,elasticsearch-cold
       - node.roles=master,data_content,data_hot
-      - xpack.monitoring.collection.enabled=true
       - path.repo=/usr/share/elasticsearch/snapshots
-      - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    mem_limit: 1Gb
     volumes:
       - hot_data:/usr/share/elasticsearch/data
       - snapshots:/usr/share/elasticsearch/snapshots
@@ -30,88 +20,59 @@ services:
       - 9200:9200
     networks:
       - elastic
+    
+    deploy:
+      replicas: 2
  
   elasticsearch-warm:
-    image: docker.elastic.co/elasticsearch/elasticsearch:$ELASTIC_VERSION
-    container_name: elasticsearch-warm
-    build:
-      dockerfile: ./Dockerfile
-      context: .
-      args:
-        - ELASTIC_VERSION=${ELASTIC_VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+    build: .
     environment:
       - node.name=elasticsearch-warm
       - cluster.name=es-docker-cluster
+      #- node.attr.size=warm
+      - node.attr.box_type=warm
       - discovery.seed_hosts=elasticsearch-hot,elasticsearch-cold
       - cluster.initial_master_nodes=elasticsearch-hot,elasticsearch-warm,elasticsearch-cold
-      - xpack.monitoring.collection.enabled=true
       - node.roles=master,data_warm
       - path.repo=/usr/share/elasticsearch/snapshots
-      - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    mem_limit: 1Gb
     volumes:
       - warm_data:/usr/share/elasticsearch/data
       - snapshots:/usr/share/elasticsearch/snapshots
     networks:
       - elastic
+    deploy:
+      replicas: 1
  
   elasticsearch-cold:
-    image: docker.elastic.co/elasticsearch/elasticsearch:$ELASTIC_VERSION
-    container_name: elasticsearch-cold
-    build:
-      dockerfile: ./Dockerfile
-      context: .
-      args:
-        - ELASTIC_VERSION=${ELASTIC_VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+    build: .
     environment:
       - node.name=elasticsearch-cold
       - cluster.name=es-docker-cluster
       - discovery.seed_hosts=elasticsearch-hot,elasticsearch-warm
+      - node.attr.box_type=cold
       - cluster.initial_master_nodes=elasticsearch-hot,elasticsearch-warm,elasticsearch-cold
-      - xpack.monitoring.collection.enabled=true
       - node.roles=master,data_cold
       - path.repo=/usr/share/elasticsearch/snapshots
-      - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    mem_limit: 1Gb
+
     volumes:
       - cold_data:/usr/share/elasticsearch/data
       - snapshots:/usr/share/elasticsearch/snapshots
     networks:
       - elastic
-    
-
-  configure_stack:
-    container_name: configure_stack
-    image: docker.elastic.co/beats/metricbeat:${ELASTIC_VERSION}
-    volumes:
-      - ./setup/:/opt/setup/:ro
-    command: /opt/setup/setup.sh
-    networks:
-      - elastic
-    depends_on:
-      - kibana
+    deploy:
+      replicas: 1
  
   kibana:
-    image: docker.elastic.co/kibana/kibana:$ELASTIC_VERSION
-    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.10.0
     ports:
       - 5601:5601
     environment:
       ELASTICSEARCH_URL: http://elasticsearch-hot:9200
       ELASTICSEARCH_HOSTS: '["http://elasticsearch-hot:9200","http://elasticsearch-warm:9200","http://elasticsearch-cold:9200"]'
-    mem_limit: 1Gb
-    depends_on:
-      - elasticsearch-hot
     networks:
       - elastic
  
@@ -127,3 +88,4 @@ volumes:
  
 networks:
   elastic:
+    driver: overlay

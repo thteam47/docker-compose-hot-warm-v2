@@ -5,7 +5,7 @@
         "actions": {
           "rollover": {
             "max_age": "2m",
-            "max_docs": 1000
+            "max_docs": 5
           },
           "set_priority": {
             "priority": 100
@@ -15,6 +15,16 @@
       "warm": {
         "min_age": "2m",
         "actions": {
+          "readonly" : { },
+          "allocate" : {
+            "number_of_replicas" : 0,
+            "include" : {
+              "box_type" : "warm"
+            }
+          },
+          "forcemerge": {
+            "max_num_segments": 1
+          },
           "set_priority": {
             "priority": 50
           }
@@ -23,11 +33,14 @@
       "cold": {
         "min_age": "5m",
         "actions": {
+          "allocate" : {
+            "number_of_replicas" : 0,
+            "include" : {
+              "box_type" : "cold"
+            }
+          },
           "set_priority": {
             "priority": 0
-          },
-          "searchable_snapshot": {
-            "snapshot_repository": "logs-snapshots-repository"
           }
         }
       },

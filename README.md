@@ -61,6 +61,19 @@ PUT /_ilm/policy/logs-hot-warm
       "warm": {
         "min_age": "2m",
         "actions": {
+          "readonly" : { },
+          "allocate" : {
+            "number_of_replicas" : 0,
+            "include" : {
+              "size" : "warm"
+            }
+          },
+          "forcemerge": {
+            "max_num_segments": 1
+          },
+          "shrink": {
+            "number_of_shards": 1
+          },
           "set_priority": {
             "priority": 50
           }
@@ -69,6 +82,12 @@ PUT /_ilm/policy/logs-hot-warm
       "cold": {
         "min_age": "5m",
         "actions": {
+          "allocate" : {
+            "number_of_replicas" : 0,
+            "include" : {
+              "size" : "cold"
+            }
+          },
           "set_priority": {
             "priority": 0
           },
