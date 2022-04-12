@@ -22,9 +22,6 @@
               "box_type" : "warm"
             }
           },
-          "forcemerge": {
-            "max_num_segments": 1
-          },
           "set_priority": {
             "priority": 50
           }
@@ -47,9 +44,6 @@
       "delete": {
         "min_age": "7m",
         "actions": {
-          "wait_for_snapshot": {
-            "policy": "logs-snapshot-policy"
-          },
           "delete": {}
         }
       }

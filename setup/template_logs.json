@@ -5,7 +5,7 @@
     "index.number_of_replicas" : 1,
     "lifecycle.name": "logs-hot-warm",
     "lifecycle.rollover_alias": "test-logs",  
-    "index.routing.allocation.include.box_type":"hot" 
+    "index.routing.allocation.include._tier_preference": "data_hot,data_warm,data_cold"  
   },
   "mappings": {
     "properties" : {
